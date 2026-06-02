@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CDH-IT COMMUNICATION</title>
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#808080;
+    margin:0;
+    padding:20px;
+}
+.container{
+    max-width:800px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+}
+h2{
+    text-align:center;
+    color:#ff69b4;
+}
+#messages{
+    height:400px;
+    overflow-y:auto;
+    border:1px solid #ccc;
+    padding:10px;
+    background:#f5f5f5;
+}
+.msg{
+    background:#ffb6c1;
+    margin:5px 0;
+    padding:10px;
+    border-radius:8px;
+}
+input,button{
+    padding:10px;
+    margin-top:10px;
+}
+#username{
+    width:150px;
+}
+#message{
+    width:60%;
+}
+button{
+    background:#ff69b4;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>CDH IT COMMUNICATION </h2>
+
+    <input type="text" id="username" placeholder="Your Name">
+
+    <div id="messages"></div>
+
+    <input type="text" id="message" placeholder="Type message">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB_K3RUccYt0HWsa_yxqxC9FhxVi5UmxEE",
+  authDomain: "cdhitmessage.firebaseapp.com",
+  databaseURL: "https://cdhitmessage-default-rtdb.firebaseio.com",
+  projectId: "cdhitmessage",
+  storageBucket: "cdhitmessage.firebasestorage.app",
+  messagingSenderId: "1047732218090",
+  appId: "1:1047732218090:web:c14e3d095be09c1e408f93",
+  measurementId: "G-RNMCXYMKF2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.sendMessage = function() {
+    const user = document.getElementById("username").value;
+    const msg = document.getElementById("message").value;
+
+    if(user && msg){
+        push(ref(db, "messages"), {
+            user: user,
+            text: msg,
+            time: new Date().toLocaleTimeString()
+        });
+
+        document.getElementById("message").value = "";
+    }
+}
+
+onChildAdded(ref(db, "messages"), (snapshot) => {
+    const data = snapshot.val();
+
+    const div = document.createElement("div");
+    div.className = "msg";
+    div.innerHTML =
+        "<b>" + data.user + "</b> (" + data.time + ")<br>" +
+        data.text;
+
+    document.getElementById("messages").appendChild(div);
+
+    const box = document.getElementById("messages");
+    box.scrollTop = box.scrollHeight;
+});
+</script>
+
+</body>
+</html>
